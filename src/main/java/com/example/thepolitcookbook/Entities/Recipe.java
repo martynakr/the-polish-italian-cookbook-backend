@@ -34,12 +34,24 @@ public class Recipe {
     @Column(name = "portions")
     private long portions;
 
+    @Getter @Setter
+    @ManyToOne
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
+    private Country country;
+
+    @Getter @Setter
+    @ManyToOne
+    @JoinColumn(name = "recipe_creator_id", referencedColumnName = "id")
+    private RecipeCreator recipeCreator;
+
     public Recipe(){};
 
-    public Recipe(String name, String ingredients, String description, long portions) {
+    public Recipe(String name, String ingredients, String description, long portions, Country country, RecipeCreator recipeCreator) {
         this.name = name;
         this.ingredients = ingredients;
         this.description = description;
         this.portions = portions;
+        this.country = country;
+        this.recipeCreator = recipeCreator;
     }
 }
