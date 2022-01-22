@@ -6,6 +6,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 @Table(name="recipes")
@@ -35,6 +36,10 @@ public class Recipe {
     private long portions;
 
     @Getter @Setter
+    @Column(name = "image")
+    private String image;
+
+    @Getter @Setter
     @ManyToOne
     @JoinColumn(name = "country_id", referencedColumnName = "id")
     private Country country;
@@ -54,4 +59,5 @@ public class Recipe {
         this.country = country;
         this.recipeCreator = recipeCreator;
     }
+
 }

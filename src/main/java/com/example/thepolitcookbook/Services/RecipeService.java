@@ -1,10 +1,16 @@
 package com.example.thepolitcookbook.Services;
 
+import com.example.thepolitcookbook.Entities.Country;
 import com.example.thepolitcookbook.Entities.Recipe;
+import com.example.thepolitcookbook.Entities.RecipeCreator;
+import com.example.thepolitcookbook.Exception.AlreadyExistsError;
 import com.example.thepolitcookbook.Exception.ResourceNotFoundException;
+import com.example.thepolitcookbook.Payloads.RecipeCreatePayload;
+import com.example.thepolitcookbook.Repositories.CountryRepository;
+import com.example.thepolitcookbook.Repositories.RecipeCreatorRepository;
 import com.example.thepolitcookbook.Repositories.RecipeRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -15,8 +21,16 @@ import java.util.Optional;
 @Transactional
 public class RecipeService {
 
+    protected final ModelMapper modelMapper = new ModelMapper();
+
     @Autowired
     private RecipeRepository recipeRepository;
+
+    @Autowired
+    private CountryRepository countryRepository;
+
+    @Autowired
+    private RecipeCreatorRepository recipeCreatorRepository;
 
     public List<Recipe> findAllRecipes(){
         return recipeRepository.findAll();
@@ -33,5 +47,37 @@ public class RecipeService {
         return recipe.get();
     }
 
+    public Optional<List<Recipe>> findByQuery(String query){
+        return recipeRepository.getQueryMatch(query);
+    }
+
+    public Recipe create(RecipeCreatePayload recipeCreatePayload) {
+
+        Recipe newRecipe = new Recipe();
+
+        Optional<Country> country = countryRepository.findById(recipeCreatePayload.getCountryId());
+        Optional<RecipeCreator> recipeCreator = recipeCreatorRepository.findById(recipeCreatePayload.getRecipeCreatorId());
+
+
+        if(recipeRepository.existsByName(recipeCreatePayload.getName())){
+            throw new AlreadyExistsError(String.format("Recipe with name: %s already exists", recipeCreatePayload.getName()));
+        }
+        modelMapper.map(recipeCreatePayload, newRecipe);
+
+        newRecipe.setName(recipeCreatePayload.getName());
+        newRecipe.setDescription(recipeCreatePayload.getDescription());
+        newRecipe.setIngredients(recipeCreatePayload.getIngredients());
+        newRecipe.setPortions(recipeCreatePayload.getPortions());
+        newRecipe.setImage(recipeCreatePayload.getImage());
+        newRecipe.setCountry(country.get());
+        newRecipe.setRecipeCreator(recipeCreator.get());
+
+        return recipeRepository.save(newRecipe);
+    }
+
+    public void delete(Long id){
+        Recipe recipe = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recipe doesn't exist, id: " + id));
+        recipeRepository.delete(recipe);
+    }
 
 }
