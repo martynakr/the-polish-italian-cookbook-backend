@@ -6,6 +6,7 @@ import com.example.thepolitcookbook.Entities.RecipeCreator;
 import com.example.thepolitcookbook.Exception.AlreadyExistsError;
 import com.example.thepolitcookbook.Exception.ResourceNotFoundException;
 import com.example.thepolitcookbook.Payloads.RecipeCreatePayload;
+import com.example.thepolitcookbook.Payloads.RecipeUpdatePayload;
 import com.example.thepolitcookbook.Repositories.CountryRepository;
 import com.example.thepolitcookbook.Repositories.RecipeCreatorRepository;
 import com.example.thepolitcookbook.Repositories.RecipeRepository;
@@ -80,4 +81,13 @@ public class RecipeService {
         recipeRepository.delete(recipe);
     }
 
+    public Recipe update(Long id, RecipeUpdatePayload recipeUpdatePayload){
+
+        var recipe = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recipe doesn't exist, id:" + id));
+
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        modelMapper.map(recipeUpdatePayload, recipe);
+
+        return recipeRepository.save(recipe);
+    }
 }

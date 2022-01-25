@@ -27,7 +27,7 @@ class ThePolItCookbookApplicationTests {
 
 	@Test
 	public void getsSingleRecipe() throws Exception {
-		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/recipes/2").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
+		mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/recipes/10").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andReturn();
 	}
 
 	@Test

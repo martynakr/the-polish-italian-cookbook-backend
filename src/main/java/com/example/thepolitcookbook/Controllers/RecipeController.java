@@ -2,6 +2,7 @@ package com.example.thepolitcookbook.Controllers;
 
 import com.example.thepolitcookbook.Entities.Recipe;
 import com.example.thepolitcookbook.Payloads.RecipeCreatePayload;
+import com.example.thepolitcookbook.Payloads.RecipeUpdatePayload;
 import com.example.thepolitcookbook.Services.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -62,5 +63,12 @@ public class RecipeController {
 
         return ResponseEntity.ok(response);
 
+    }
+
+    @PatchMapping("/recipes/{id}")
+    public ResponseEntity<Recipe> updateRecipe(@PathVariable Long id, @RequestBody RecipeUpdatePayload recipeUpdatePayload){
+        Recipe updatedRecipe = recipeService.update(id, recipeUpdatePayload);
+
+        return ResponseEntity.ok(updatedRecipe);
     }
 }
